@@ -36,7 +36,7 @@ public class PrimaryDataSourceConfig {
             EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(primaryDataSource())
-                .packages("com.learning.database.repo.primary")
+                .packages("com.learning.database.entiry.primary")
                 .persistenceUnit("primary")
                 .build();
     }

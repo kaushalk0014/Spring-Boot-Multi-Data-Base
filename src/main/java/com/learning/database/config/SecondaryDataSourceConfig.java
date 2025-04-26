@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.learning.database.repo",
+    basePackages = "com.learning.database.repo.secondary",
     entityManagerFactoryRef = "secondaryEntityManagerFactory",
     transactionManagerRef = "secondaryTransactionManager"
 )
@@ -33,7 +33,7 @@ public class SecondaryDataSourceConfig {
             EntityManagerFactoryBuilder builder) {
         return builder
                 .dataSource(secondaryDataSource())
-                .packages("com.learning.database.config")
+                .packages("com.learning.database.entiry.secondary")
                 .persistenceUnit("secondary")
                 .build();
     }
