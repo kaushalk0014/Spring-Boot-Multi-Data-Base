@@ -2,6 +2,7 @@ package com.learning.database.config;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -25,24 +26,25 @@ public class PrimaryDataSourceConfig {
 
     @Primary
     @Bean
-    @ConfigurationProperties("spring.datasource.primary")
+    @ConfigurationProperties(prefix = "spring.datasource.primary")
     public DataSource primaryDataSource() {
         return DataSourceBuilder.create().build();
     }
 
     @Primary
-    @Bean
+    @Bean(name = "primaryEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory(
-            EntityManagerFactoryBuilder builder) {
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("primaryDataSource") DataSource dataSource) {
         return builder
-                .dataSource(primaryDataSource())
+                .dataSource(dataSource)
                 .packages("com.learning.database.entiry.primary")
                 .persistenceUnit("primary")
                 .build();
     }
 
     @Primary
-    @Bean
+    @Bean(name = "primaryTransactionManager")
     public PlatformTransactionManager primaryTransactionManager(
             final LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory) {
         return new JpaTransactionManager(primaryEntityManagerFactory.getObject());

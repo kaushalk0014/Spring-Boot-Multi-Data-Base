@@ -26,9 +26,10 @@ public class SecondaryDataSourceConfig {
     @ConfigurationProperties("spring.datasource.secondary")
     public DataSource secondaryDataSource() {
         return DataSourceBuilder.create().build();
+    	
     }
 
-    @Bean
+    @Bean(name = "secondaryEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(
             EntityManagerFactoryBuilder builder) {
         return builder
@@ -38,7 +39,7 @@ public class SecondaryDataSourceConfig {
                 .build();
     }
 
-    @Bean
+    @Bean(name = "secondaryTransactionManager")
     public PlatformTransactionManager secondaryTransactionManager(
             final LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory) {
         return new JpaTransactionManager(secondaryEntityManagerFactory.getObject());
