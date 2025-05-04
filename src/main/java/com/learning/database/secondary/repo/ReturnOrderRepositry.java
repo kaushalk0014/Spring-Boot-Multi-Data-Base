@@ -1,4 +1,4 @@
-package com.learning.database.repo.secondary;
+package com.learning.database.secondary.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package com.learning.database.entiry.secondary;
+package com.learning.database.primary.entiry;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,14 +12,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "return_details")
-public class Return {
+@Table(name = "order_details")
+public class Order {
 
-	@GeneratedValue
 	@Id
+	@GeneratedValue
 	private Integer id;
 	private String productName;
 	private String orderId;
 	private String amount;
-	private String returnStatus;
+	private String status;
+	
 }
