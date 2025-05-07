@@ -5,6 +5,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,38 +19,42 @@ import jakarta.persistence.EntityManagerFactory;
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.learning.database.secondary",
+    basePackages = "com.learning.database.secondary.repo",
     entityManagerFactoryRef = "secondaryEntityManagerFactory",
     transactionManagerRef = "secondaryTransactionManager"
 )
 public class SecondaryDataSourceConfig {
 
-    @Bean
-    @ConfigurationProperties("spring.datasource.secondary")
-    public DataSourceProperties secondaryDataSourceProperties() {
-        return new DataSourceProperties();
-    }
+	/*
+	 * @Bean
+	 * 
+	 * @ConfigurationProperties("spring.datasource.secondary") public
+	 * DataSourceProperties secondaryDataSourceProperties() { return new
+	 * DataSourceProperties(); }
+	 */
 
-    @Bean
+    @Bean(name = "secondaryDataSource")
+    //@ConfigurationProperties("spring.datasource.secondary")
+    @ConfigurationProperties(prefix = "spring.datasource.secondary")
     public DataSource secondaryDataSource() {
-        return secondaryDataSourceProperties().initializeDataSourceBuilder().build();
+        return DataSourceBuilder.create().build();
     }
 
-    @Bean
+    @Bean(name = "secondaryEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean secondaryEntityManagerFactory(
-        EntityManagerFactoryBuilder builder
-    ) {
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("secondaryDataSource") DataSource dataSource) {
+
         return builder
-            .dataSource(secondaryDataSource())
-            .packages("com.learning.database.primary.entiry")
-            .persistenceUnit("secondary")
-            .build();
+                .dataSource(dataSource)
+                .packages("com.learning.database.secondary.entity") // entities
+                .persistenceUnit("secondary")
+                .build();
     }
 
-    @Bean
+    @Bean(name = "secondaryTransactionManager")
     public PlatformTransactionManager secondaryTransactionManager(
-        @Qualifier("secondaryEntityManagerFactory") EntityManagerFactory emf
-    ) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("secondaryEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 }

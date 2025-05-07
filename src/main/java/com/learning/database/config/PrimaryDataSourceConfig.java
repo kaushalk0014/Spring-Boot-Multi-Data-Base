@@ -33,28 +33,28 @@ public class PrimaryDataSourceConfig {
     }
 
     @Primary
-    @Bean
+    @Bean(name = "primaryDataSource")
+    @ConfigurationProperties("spring.datasource.primary")
     public DataSource primaryDataSource() {
         return primaryDataSourceProperties().initializeDataSourceBuilder().build();
     }
 
     @Primary
-    @Bean
+    @Bean(name = "primaryEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean primaryEntityManagerFactory(
-        EntityManagerFactoryBuilder builder
-    ) {
+            EntityManagerFactoryBuilder builder,
+            @Qualifier("primaryDataSource") DataSource dataSource) {
         return builder
-            .dataSource(primaryDataSource())
-            .packages("com.learning.database.primary.entiry")
-            .persistenceUnit("primary")
-            .build();
+                .dataSource(dataSource)
+                .packages("com.learning.database.primary.entity") // your primary entities
+                .persistenceUnit("primary")
+                .build();
     }
-
+    
     @Primary
-    @Bean
+    @Bean(name = "primaryTransactionManager")
     public PlatformTransactionManager primaryTransactionManager(
-        @Qualifier("primaryEntityManagerFactory") EntityManagerFactory emf
-    ) {
-        return new JpaTransactionManager(emf);
+            @Qualifier("primaryEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
+        return new JpaTransactionManager(entityManagerFactory);
     }
 }
